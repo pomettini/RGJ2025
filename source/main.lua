@@ -11,4 +11,9 @@ SceneManager:init()
 
 function pd.update()
     SceneManager:update()
+
+    gfx.sprite.update()
+    pd.timer.updateTimers()
+
+    pd.drawFPS(0, 228)
 end

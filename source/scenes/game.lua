@@ -1,5 +1,7 @@
 import "CoreLibs/timer"
 import "CoreLibs/ui"
+import "game_over"
+import "victory_screen"
 import "../boat"
 import "../button_queue"
 import "../canvas"
@@ -22,6 +24,14 @@ function Game:init()
     Canvas:init()
     Guardian:init()
 
+    Events.on_game_over:connect(function()
+        SceneManager:change_scene(GameOver)
+    end)
+
+    Events.on_victory:connect(function()
+        SceneManager:change_scene(VictoryScreen)
+    end)
+
     for _, timer in pairs(pd.timer.allTimers()) do
         timer:remove()
     end
@@ -35,7 +45,8 @@ end
 function Game:update()
     spr_bg:draw(0, 0)
 
-    local dt = 0
+    local dt = pd.getElapsedTime()
+    pd.resetElapsedTime()
 
     Boat:update(dt)
     ButtonQueue:update(dt)
@@ -46,9 +57,4 @@ function Game:update()
     ButtonQueue:draw()
     Canvas:draw()
     Guardian:draw()
-
-    gfx.sprite.update()
-    pd.timer.updateTimers()
-
-    pd.drawFPS(0, 228)
 end
