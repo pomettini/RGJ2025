@@ -1,3 +1,4 @@
+import "CoreLibs/crank"
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "Utils"
@@ -5,9 +6,7 @@ import "Utils"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-local QUEUE_LENGTH <const> = 7
-local BUTTON_PREV_ID <const> = 3
-local BUTTON_NEXT_ID <const> = 5
+local QUEUE_LENGTH <const> = 5
 local BUTTONS <const> =
 {
     pd.kButtonA,
@@ -49,6 +48,8 @@ local SPRITE_BUTTONS <const> =
 ButtonQueue = {}
 ButtonQueue.rng_seed = nil
 ButtonQueue.current_index = 0
+ButtonQueue.current_button = 1
+ButtonQueue.offset_x = 0
 ButtonQueue.queue = {}
 
 function ButtonQueue:update_queue()
@@ -56,6 +57,7 @@ function ButtonQueue:update_queue()
         local rand_button = Utils:rand_at(self.rng_seed, i + self.current_index, 1, #BUTTONS)
         self.queue[i] = BUTTONS[rand_button]
     end
+    self.current_button = self.queue[3]
 end
 
 function ButtonQueue:move_back()
@@ -71,19 +73,49 @@ end
 function ButtonQueue:init()
     self.rng_seed = 1
     self.current_index = 0
+    self.current_button = 1
+    self.offset_x = 0
     self.queue = {}
 
     self:update_queue()
-
-    printTable(self.queue)
 end
 
 function ButtonQueue:update(dt)
+    --[[
+    local tick = playdate.getCrankTicks(6)
+    if tick == -1 then
+        self:move_back()
+    elseif tick == 1 then
+        self:move_next()
+    end
+    ]] --
+
+    local change, acceleratedChange = pd.getCrankChange()
+    local current, pressed, released = pd.getButtonState()
+
+    if current == self.current_button then
+        self.offset_x -= change
+    end
+
+    if self.offset_x > 32 then
+        Events.on_canvas_back.emit()
+        self:move_back()
+        self.offset_x = 0
+    elseif self.offset_x < -32 then
+        Events.on_canvas_next.emit()
+        self:move_next()
+        self.offset_x = 0
+    end
 end
 
 function ButtonQueue:draw()
     for i = 1, QUEUE_LENGTH do
-        local delta_x = ((32 / QUEUE_LENGTH) * (i - 1)) + (400 / QUEUE_LENGTH) * (i - 1)
-        SPRITE_BUTTONS[self.queue[i]]:draw(delta_x, 208)
+        -- local delta_x = (432 / QUEUE_LENGTH) * (i - 1)
+        local start_x = 200 - ((32 * QUEUE_LENGTH) / 2)
+        local x = start_x + ((i - 1) * 32) + self.offset_x
+        SPRITE_BUTTONS[self.queue[i]]:draw(x, 208)
     end
+
+    gfx.setColor(gfx.kColorWhite)
+    gfx.drawRect(185, 208, 32, 32)
 end

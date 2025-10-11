@@ -8,6 +8,9 @@ import "guardian"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
+local spr_bg = gfx.image.new("img/spr_bg")
+assert(spr_bg)
+
 Boat:init()
 ButtonQueue:init()
 Canvas:init()
@@ -17,6 +20,8 @@ pd.display.setRefreshRate(50)
 
 function pd.update()
     gfx.clear(gfx.kColorBlack)
+
+    spr_bg:draw(0, 0)
 
     local dt = 0
 
