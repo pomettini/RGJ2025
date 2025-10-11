@@ -115,7 +115,15 @@ function ButtonQueue:draw()
         -- local delta_x = (432 / QUEUE_LENGTH) * (i - 1)
         local start_x = 200 - ((32 * QUEUE_LENGTH) / 2)
         local x = start_x + ((i - 1) * 32) + self.offset_x
-        SPRITE_BUTTONS[self.queue[i]]:draw(x, 208)
+
+        local alpha = 0.25
+        if i == 2 or i == 4 then
+            alpha = 0.5
+        elseif i == 3 then
+            alpha = 1
+        end
+
+        SPRITE_BUTTONS[self.queue[i]]:drawFaded(x, 208, alpha, gfx.image.kDitherTypeBayer2x2)
     end
 
     gfx.setColor(gfx.kColorWhite)

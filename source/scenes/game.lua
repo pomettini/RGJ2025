@@ -19,6 +19,8 @@ assert(spr_bg)
 Game = {}
 
 function Game:init()
+    pd.resetElapsedTime()
+
     Events.on_crank_tick:disconnect_all()
     Events.on_canvas_back:disconnect_all()
     Events.on_canvas_next:disconnect_all()
