@@ -19,10 +19,12 @@ local MAX_SUSPICIOUSNESS <const> = 100
 Guardian = {}
 Guardian.watching = false
 Guardian.suspiciousness = 0
+Guardian.current_animation_id = 1
 
 function Guardian:init()
     self.watching = false
     self.suspiciousness = 0
+    self.current_animation_id = 1
 
     self:set_watch()
 
@@ -41,6 +43,7 @@ end
 
 function Guardian:set_watch()
     self.watching = true
+    self.current_animation_id = 1
 
     local timer = pd.timer.new(math.random(1000, 5000), function()
         self:set_ignore()
@@ -49,6 +52,7 @@ end
 
 function Guardian:set_ignore()
     self.watching = false
+    self.current_animation_id = 1
 
     local timer = pd.timer.new(math.random(1000, 5000), function()
         self:set_watch()
@@ -56,6 +60,8 @@ function Guardian:set_ignore()
 end
 
 function Guardian:update(dt)
+    self.current_animation_id += dt * 10
+
     if self.watching then
         self.suspiciousness += dt * 10
 
@@ -67,9 +73,9 @@ end
 
 function Guardian:draw()
     if self.watching then
-        spr_guardian_idle:drawImage(1, 255, 0)
+        spr_guardian_idle:drawImage(math.min(10, math.floor(self.current_animation_id)), 255, 0)
     else
-        spr_guardian_away:drawImage(1, 255, 0)
+        spr_guardian_away:drawImage(math.min(20, math.floor(self.current_animation_id)), 255, 0)
     end
 
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)

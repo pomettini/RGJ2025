@@ -19,6 +19,7 @@ assert(spr_bg)
 Game = {}
 
 function Game:init()
+    Events.on_crank_tick:disconnect_all()
     Events.on_canvas_back:disconnect_all()
     Events.on_canvas_next:disconnect_all()
     Events.on_game_over:disconnect_all()
