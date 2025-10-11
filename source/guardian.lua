@@ -13,6 +13,8 @@ assert(spr_guardian_idle)
 local spr_guardian_sus = gfx.imagetable.new("img/spr_guardian_sus")
 assert(spr_guardian_sus)
 
+local MAX_SUSPICIOUSNESS = 100
+
 Guardian = {}
 Guardian.watching = false
 Guardian.suspiciousness = 0
