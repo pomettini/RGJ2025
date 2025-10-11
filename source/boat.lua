@@ -20,7 +20,7 @@ function Boat:update(dt)
     self.completeness += dt
 
     if self.completeness >= COMPLETENESS_MAX then
-        Events.on_victory.emit()
+        Events.on_victory:emit()
     end
 end
 

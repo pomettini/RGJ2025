@@ -49,6 +49,7 @@ ButtonQueue = {}
 ButtonQueue.rng_seed = nil
 ButtonQueue.current_index = 0
 ButtonQueue.current_button = 1
+ButtonQueue.current_tick = 0
 ButtonQueue.offset_x = 0
 ButtonQueue.queue = {}
 
@@ -71,9 +72,10 @@ function ButtonQueue:move_next()
 end
 
 function ButtonQueue:init()
-    self.rng_seed = 1
+    self.rng_seed = math.random(1, 256)
     self.current_index = 0
     self.current_button = 1
+    self.current_tick = 0
     self.offset_x = 0
     self.queue = {}
 
@@ -81,28 +83,28 @@ function ButtonQueue:init()
 end
 
 function ButtonQueue:update(dt)
-    --[[
-    local tick = playdate.getCrankTicks(6)
-    if tick == -1 then
-        self:move_back()
-    elseif tick == 1 then
-        self:move_next()
-    end
-    ]] --
-
     local change, acceleratedChange = pd.getCrankChange()
     local current, pressed, released = pd.getButtonState()
 
     if current == self.current_button then
         self.offset_x -= change
+
+        if change > 0 then
+            self.current_tick += change
+        end
+    end
+
+    if self.current_tick > 8 then
+        Events.on_crank_tick:emit()
+        self.current_tick = 0
     end
 
     if self.offset_x > 32 then
-        Events.on_canvas_back.emit()
+        Events.on_canvas_back:emit()
         self:move_back()
         self.offset_x = 0
     elseif self.offset_x < -32 then
-        Events.on_canvas_next.emit()
+        Events.on_canvas_next:emit()
         self:move_next()
         self.offset_x = 0
     end

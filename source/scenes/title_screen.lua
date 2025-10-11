@@ -4,6 +4,9 @@ import "game"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
+local spr_title_screen = gfx.image.new("img/spr_title_screen")
+assert(spr_title_screen)
+
 TitleScreen = {}
 
 function TitleScreen:init()
@@ -11,9 +14,7 @@ end
 
 function TitleScreen:update()
     gfx.clear(gfx.kColorBlack)
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawText("Press A to start", 0, 0)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    spr_title_screen:draw(0, 0)
 
     if pd.buttonJustReleased(pd.kButtonA) then
         SceneManager:change_scene(Game)

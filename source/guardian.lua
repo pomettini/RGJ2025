@@ -14,8 +14,6 @@ assert(spr_guardian_idle)
 local spr_guardian_sus = gfx.imagetable.new("img/spr_guardian_sus")
 assert(spr_guardian_sus)
 
-local anim_guardian_idle = gfx.animation.loop.new(100, spr_guardian_idle, true)
-
 local MAX_SUSPICIOUSNESS <const> = 100
 
 Guardian = {}
@@ -36,7 +34,7 @@ function Guardian:init()
 
     Events.on_canvas_back:connect(function()
         if self.watching then
-            Events.on_game_over.emit()
+            Events.on_game_over:emit()
         end
     end)
 end
@@ -44,7 +42,7 @@ end
 function Guardian:set_watch()
     self.watching = true
 
-    local timer = pd.timer.new(1000, function()
+    local timer = pd.timer.new(math.random(1000, 5000), function()
         self:set_ignore()
     end)
 end
@@ -52,7 +50,7 @@ end
 function Guardian:set_ignore()
     self.watching = false
 
-    local timer = pd.timer.new(1000, function()
+    local timer = pd.timer.new(math.random(1000, 5000), function()
         self:set_watch()
     end)
 end
@@ -62,14 +60,16 @@ function Guardian:update(dt)
         self.suspiciousness += dt * 10
 
         if self.suspiciousness > MAX_SUSPICIOUSNESS then
-            Events.on_game_over.emit()
+            Events.on_game_over:emit()
         end
     end
 end
 
 function Guardian:draw()
     if self.watching then
-        anim_guardian_idle:draw(255, 0)
+        spr_guardian_idle:drawImage(1, 255, 0)
+    else
+        spr_guardian_away:drawImage(1, 255, 0)
     end
 
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)

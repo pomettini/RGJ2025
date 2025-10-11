@@ -19,6 +19,15 @@ assert(spr_bg)
 Game = {}
 
 function Game:init()
+    Events.on_canvas_back:disconnect_all()
+    Events.on_canvas_next:disconnect_all()
+    Events.on_game_over:disconnect_all()
+    Events.on_victory:disconnect_all()
+
+    for _, timer in pairs(pd.timer.allTimers()) do
+        timer:remove()
+    end
+
     Boat:init()
     ButtonQueue:init()
     Canvas:init()
@@ -30,15 +39,6 @@ function Game:init()
 
     Events.on_victory:connect(function()
         SceneManager:change_scene(VictoryScreen)
-    end)
-
-    for _, timer in pairs(pd.timer.allTimers()) do
-        timer:remove()
-    end
-
-    menu:removeAllMenuItems()
-    local _, _ = menu:addMenuItem("Reset", function()
-        self:init()
     end)
 end
 

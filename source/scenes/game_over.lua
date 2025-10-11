@@ -1,4 +1,5 @@
 import "CoreLibs/graphics"
+import "game"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -14,4 +15,8 @@ end
 function GameOver:update()
     gfx.clear(gfx.kColorBlack)
     spr_game_over:draw(0, 0)
+
+    if pd.buttonJustReleased(pd.kButtonA) then
+        SceneManager:change_scene(Game)
+    end
 end

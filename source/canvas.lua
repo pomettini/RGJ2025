@@ -31,13 +31,13 @@ function Canvas:init()
         end
     end)
 
-    Events.on_canvas_next:connect(function()
+    Events.on_crank_tick:connect(function()
         self.current_frame = Utils:bounded_increment(self.current_frame, FRAMES_MAX, 1)
 
-        self.completeness += 5
+        self.completeness += 1
 
         if self.completeness >= COMPLETENESS_MAX then
-            Events.on_game_over.emit()
+            Events.on_game_over:emit()
         end
     end)
 end
