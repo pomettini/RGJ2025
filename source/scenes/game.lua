@@ -10,9 +10,7 @@ import "../sfx_manager"
 import "../utils"
 
 local pd <const> = playdate
-local display <const> = pd.display
 local gfx <const> = playdate.graphics
-local menu <const> = pd.getSystemMenu()
 
 local spr_bg = gfx.image.new("img/spr_bg")
 assert(spr_bg)
@@ -28,6 +26,8 @@ function Game:init()
     Events.on_crank_tick:disconnect_all()
     Events.on_canvas_back:disconnect_all()
     Events.on_canvas_next:disconnect_all()
+    Events.on_watching:disconnect_all()
+    Events.on_ignoring:disconnect_all()
     Events.on_game_over:disconnect_all()
     Events.on_victory:disconnect_all()
 
@@ -48,6 +48,8 @@ function Game:init()
     Events.on_victory:connect(function()
         SceneManager:change_scene(VictoryScreen)
     end)
+
+    SfxManager:loop_start()
 end
 
 function Game:update()

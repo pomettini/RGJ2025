@@ -51,6 +51,8 @@ function Guardian:set_watch()
     self.watching = true
     self.current_animation_id = 4
 
+    Events.on_watching:emit()
+
     local timer = pd.timer.new(math.random(1000, 5000), function()
         self:set_ignore()
     end)
@@ -59,6 +61,8 @@ end
 function Guardian:set_ignore()
     self.watching = false
     self.current_animation_id = 1
+
+    Events.on_ignoring:emit()
 
     local timer = pd.timer.new(math.random(1000, 5000), function()
         self:set_watch()

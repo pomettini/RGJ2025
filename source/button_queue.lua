@@ -1,7 +1,8 @@
 import "CoreLibs/crank"
 import "CoreLibs/object"
 import "CoreLibs/graphics"
-import "Utils"
+import "events"
+import "utils"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -77,9 +78,13 @@ function ButtonQueue:init()
     self.current_index = 0
     self.current_button = 1
     self.current_tick = 0
-    self.show_indicator = 0
+    self.show_indicator = true
     self.offset_x = 0
     self.queue = {}
+
+    Events.on_canvas_next:connect(function()
+        self.show_indicator = false
+    end)
 
     self:update_queue()
 end
