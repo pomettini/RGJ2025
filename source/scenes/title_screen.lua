@@ -1,5 +1,5 @@
 import "scene_manager"
-import "game"
+import "tutorial"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -17,6 +17,6 @@ function TitleScreen:update()
     spr_title_screen:draw(0, 0)
 
     if pd.buttonJustReleased(pd.kButtonA) then
-        SceneManager:change_scene(Game)
+        SceneManager:change_scene(Tutorial)
     end
 end

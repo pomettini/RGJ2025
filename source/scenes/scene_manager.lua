@@ -1,10 +1,7 @@
-import "game_over"
-import "game"
-import "title_screen"
-import "victory_screen"
+import "intro"
 
 SceneManager = {}
-SceneManager.current = TitleScreen
+SceneManager.current = Intro
 
 function SceneManager:init()
     self.current:init()

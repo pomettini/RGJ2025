@@ -5,7 +5,7 @@ import "scenes/scene_manager"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-pd.display.setRefreshRate(50)
+pd.display.setRefreshRate(30)
 
 SceneManager:init()
 
@@ -15,5 +15,5 @@ function pd.update()
     gfx.sprite.update()
     pd.timer.updateTimers()
 
-    pd.drawFPS(0, 228)
+    -- pd.drawFPS(0, 228)
 end

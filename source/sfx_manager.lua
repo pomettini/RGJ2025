@@ -4,6 +4,9 @@ import "events"
 local pd <const> = playdate
 local snd <const> = playdate.sound
 
+local music_menu = snd.fileplayer.new("music/menu")
+assert(music_menu)
+
 local music_loop = snd.fileplayer.new("music/loop")
 assert(music_loop)
 
@@ -39,4 +42,12 @@ end
 function SfxManager:loop_stop()
     music_loop:stop()
     music_loop_creepy:stop()
+end
+
+function SfxManager:menu_start()
+    music_menu:play(0)
+end
+
+function SfxManager:menu_stop()
+    music_menu:stop()
 end

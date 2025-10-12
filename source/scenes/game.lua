@@ -49,6 +49,7 @@ function Game:init()
         SceneManager:change_scene(VictoryScreen)
     end)
 
+    SfxManager:menu_stop()
     SfxManager:loop_start()
 end
 
