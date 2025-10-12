@@ -15,7 +15,12 @@ local gfx <const> = playdate.graphics
 local spr_bg = gfx.image.new("img/spr_bg")
 assert(spr_bg)
 
+local spr_hold = gfx.imagetable.new("img/spr_hold")
+assert(spr_hold)
+
 Game = {}
+-- Last minute hack
+Game.anim_counter = 0
 
 function Game:init()
     pd.resetElapsedTime()
@@ -48,6 +53,9 @@ function Game:init()
 
     SfxManager:menu_stop()
     SfxManager:loop_start()
+
+    -- Last minute hack
+    self.anim_counter = 0
 end
 
 function Game:update()
@@ -67,4 +75,12 @@ function Game:update()
     Guardian:draw()
     ButtonQueue:draw()
     Canvas:draw()
+
+    -- All the code written below is a last minute hack
+    self.anim_counter += dt * 10
+
+    local current, _, _ = pd.getButtonState()
+    if current ~= 0 then
+        spr_hold:drawImage(math.ceil(self.anim_counter / 2 % 2), 200 - 31, 206 - 24 - 12)
+    end
 end

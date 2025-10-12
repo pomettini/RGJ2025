@@ -94,7 +94,7 @@ end
 
 function ButtonQueue:update(dt)
     local change, _ = pd.getCrankChange()
-    local current, _, _ = pd.getButtonState()
+    local current, _, released = pd.getButtonState()
 
     if current == self.current_button then
         self.offset_x -= change
@@ -116,6 +116,10 @@ function ButtonQueue:update(dt)
     elseif self.offset_x < -64 then
         Events.on_canvas_next:emit()
         self:move_next()
+        self.offset_x = 0
+    end
+
+    if released ~= 0 then
         self.offset_x = 0
     end
 end

@@ -98,7 +98,7 @@ function Guardian:draw()
 
     local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
 
-    spr_guardian_idle:drawImage(anim_id, 255 + math.random(-shakiness, shakiness), math.random(-shakiness, shakiness))
+    spr_guardian_idle:drawImage(anim_id, 255 + math.random(-shakiness, shakiness), 15 + math.random(-shakiness, shakiness))
 
     local temp = gfx.image.new(40, 40)
 
