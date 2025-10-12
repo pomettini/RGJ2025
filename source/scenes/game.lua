@@ -6,6 +6,7 @@ import "../boat"
 import "../button_queue"
 import "../canvas"
 import "../guardian"
+import "../sfx_manager"
 import "../utils"
 
 local pd <const> = playdate
@@ -38,6 +39,7 @@ function Game:init()
     ButtonQueue:init()
     Canvas:init()
     Guardian:init()
+    SfxManager:init()
 
     Events.on_game_over:connect(function()
         SceneManager:change_scene(GameOver)
@@ -60,9 +62,11 @@ function Game:update()
     Guardian:update(dt)
 
     spr_bg:draw(0, 0)
-    spr_waves:drawFaded(0, 0, 0.2, gfx.image.kDitherTypeBayer2x2)
 
     Boat:draw()
+
+    spr_waves:draw(398 - 160, 206 - 44)
+
     ButtonQueue:draw()
     Canvas:draw()
     Guardian:draw()

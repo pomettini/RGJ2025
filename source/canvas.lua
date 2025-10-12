@@ -12,6 +12,9 @@ assert(spr_penelope)
 local spr_canvas = gfx.imagetable.new("img/spr_canvas")
 assert(spr_canvas)
 
+local spr_skull = gfx.image.new("img/spr_skull")
+assert(spr_skull)
+
 local COMPLETENESS_MAX <const> = 50
 local FRAMES_MAX <const> = 6
 
@@ -55,4 +58,6 @@ function Canvas:draw()
 
     spr_penelope:drawImage(self.current_frame, 0, 7)
     spr_canvas:drawImage(self.completeness, 100, 17)
+
+    spr_skull:drawFaded(180 - 19, 110 - 21, 0.5, gfx.image.kDitherTypeFloydSteinberg)
 end

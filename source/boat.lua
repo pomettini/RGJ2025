@@ -25,6 +25,6 @@ function Boat:update(dt)
 end
 
 function Boat:draw()
-    local x = pd.math.lerp(334, 150, self.completeness / 100)
+    local x = pd.math.lerp(334, 236, self.completeness / 100)
     spr_boat:draw(x, 120)
 end
