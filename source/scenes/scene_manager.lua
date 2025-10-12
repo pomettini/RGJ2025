@@ -1,4 +1,5 @@
 import "intro"
+import "game"
 
 SceneManager = {}
 SceneManager.current = Intro

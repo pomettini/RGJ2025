@@ -15,9 +15,6 @@ local gfx <const> = playdate.graphics
 local spr_bg = gfx.image.new("img/spr_bg")
 assert(spr_bg)
 
-local spr_waves = gfx.image.new("img/spr_waves")
-assert(spr_waves)
-
 Game = {}
 
 function Game:init()
@@ -67,10 +64,7 @@ function Game:update()
     spr_bg:draw(0, 0)
 
     Boat:draw()
-
-    spr_waves:draw(398 - 160, 206 - 44)
-
+    Guardian:draw()
     ButtonQueue:draw()
     Canvas:draw()
-    Guardian:draw()
 end

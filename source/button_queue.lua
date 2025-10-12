@@ -36,6 +36,9 @@ assert(spr_button_right)
 local spr_button_up = gfx.image.new("img/P_FrecciaUp")
 assert(spr_button_up)
 
+local spr_frame = gfx.image.new("img/spr_frame")
+assert(spr_frame)
+
 local SPRITE_BUTTONS <const> =
 {
     [pd.kButtonA] = spr_button_a,
@@ -133,6 +136,8 @@ function ButtonQueue:draw()
 
     gfx.setColor(gfx.kColorWhite)
     gfx.drawRect(185, 208, 32, 32)
+
+    spr_frame:draw(0, 0)
 
     local current, _, _ = pd.getButtonState()
 

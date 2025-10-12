@@ -20,6 +20,12 @@ assert(spr_arrow_up)
 local spr_arrow_down = gfx.imagetable.new("img/spr_arrow_down")
 assert(spr_arrow_down)
 
+local spr_waves = gfx.imagetable.new("img/spr_waves")
+assert(spr_waves)
+
+local spr_seafoam = gfx.imagetable.new("img/spr_seafoam")
+assert(spr_seafoam)
+
 local MAX_SUSPICIOUSNESS <const> = 100
 
 Guardian = {}
@@ -105,6 +111,9 @@ function Guardian:draw()
     gfx.popContext()
 
     temp:drawFaded(73, 37, 0.5, gfx.image.kDitherTypeBayer2x2)
+
+    spr_waves:drawImage(math.ceil(self.current_animation_id / 2 % 2), 398 - 160, 206 - 60)
+    spr_seafoam:drawImage(math.ceil(self.current_animation_id / 2 % 2), 398 - 160 - 86, 206 - 60)
 
     --[[
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)

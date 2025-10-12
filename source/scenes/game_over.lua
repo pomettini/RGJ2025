@@ -23,7 +23,7 @@ function GameOver:update()
 
     self.timer += 0.01
 
-    if pd.buttonJustReleased(pd.kButtonA) and self.timer > 1 then
+    if pd.buttonJustReleased(pd.kButtonA) and self.timer > 0.66 then
         SceneManager:change_scene(Game)
     end
 end
