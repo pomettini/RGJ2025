@@ -51,6 +51,7 @@ ButtonQueue.current_index = 0
 ButtonQueue.current_button = 1
 ButtonQueue.current_tick = 0
 ButtonQueue.offset_x = 0
+ButtonQueue.show_indicator = true
 ButtonQueue.queue = {}
 
 function ButtonQueue:update_queue()
@@ -76,6 +77,7 @@ function ButtonQueue:init()
     self.current_index = 0
     self.current_button = 1
     self.current_tick = 0
+    self.show_indicator = 0
     self.offset_x = 0
     self.queue = {}
 
@@ -83,8 +85,8 @@ function ButtonQueue:init()
 end
 
 function ButtonQueue:update(dt)
-    local change, acceleratedChange = pd.getCrankChange()
-    local current, pressed, released = pd.getButtonState()
+    local change, _ = pd.getCrankChange()
+    local current, _, _ = pd.getButtonState()
 
     if current == self.current_button then
         self.offset_x -= change
@@ -94,16 +96,16 @@ function ButtonQueue:update(dt)
         end
     end
 
-    if self.current_tick > 8 then
+    if self.current_tick > 16 then
         Events.on_crank_tick:emit()
         self.current_tick = 0
     end
 
-    if self.offset_x > 32 then
+    if self.offset_x > 64 then
         Events.on_canvas_back:emit()
         self:move_back()
         self.offset_x = 0
-    elseif self.offset_x < -32 then
+    elseif self.offset_x < -64 then
         Events.on_canvas_next:emit()
         self:move_next()
         self.offset_x = 0
@@ -113,13 +115,11 @@ end
 function ButtonQueue:draw()
     for i = 1, QUEUE_LENGTH do
         -- local delta_x = (432 / QUEUE_LENGTH) * (i - 1)
-        local start_x = 200 - ((32 * QUEUE_LENGTH) / 2)
-        local x = start_x + ((i - 1) * 32) + self.offset_x
+        local start_x = 200 - ((64 * QUEUE_LENGTH) / 2)
+        local x = start_x + ((i - 1) * 64) + self.offset_x + 16
 
         local alpha = 0.25
-        if i == 2 or i == 4 then
-            alpha = 0.5
-        elseif i == 3 then
+        if i == 3 then
             alpha = 1
         end
 
@@ -128,4 +128,10 @@ function ButtonQueue:draw()
 
     gfx.setColor(gfx.kColorWhite)
     gfx.drawRect(185, 208, 32, 32)
+
+    local current, _, _ = pd.getButtonState()
+
+    if self.show_indicator and current ~= 0 then
+        playdate.ui.crankIndicator:draw(0, 0)
+    end
 end

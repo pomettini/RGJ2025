@@ -46,6 +46,13 @@ function Canvas:update(dt)
 end
 
 function Canvas:draw()
+    local temp = gfx.image.new(165, 179)
+    gfx.pushContext(temp)
+    spr_canvas:drawImage(50, 0, 0)
+    gfx.popContext()
+
+    temp:drawFaded(100, 17, 0.2, gfx.image.kDitherTypeFloydSteinberg)
+
     spr_penelope:drawImage(self.current_frame, 0, 7)
     spr_canvas:drawImage(self.completeness, 100, 17)
 end

@@ -16,6 +16,9 @@ local menu <const> = pd.getSystemMenu()
 local spr_bg = gfx.image.new("img/spr_bg")
 assert(spr_bg)
 
+local spr_waves = gfx.image.new("img/spr_waves")
+assert(spr_waves)
+
 Game = {}
 
 function Game:init()
@@ -46,7 +49,7 @@ function Game:init()
 end
 
 function Game:update()
-    spr_bg:draw(0, 0)
+    gfx.clear(gfx.kColorBlack)
 
     local dt = pd.getElapsedTime()
     pd.resetElapsedTime()
@@ -55,6 +58,9 @@ function Game:update()
     ButtonQueue:update(dt)
     Canvas:update(dt)
     Guardian:update(dt)
+
+    spr_bg:draw(0, 0)
+    spr_waves:drawFaded(0, 0, 0.2, gfx.image.kDitherTypeBayer2x2)
 
     Boat:draw()
     ButtonQueue:draw()

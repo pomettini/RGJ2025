@@ -24,3 +24,15 @@ end
 function Utils:bounded_decrement(number, max, delta)
     return ((number - 1 - delta) % max) + 1
 end
+
+function Utils:clamp(x, min, max)
+    return math.max(math.min(x, max), min)
+end
+
+function Utils:ease(t)
+    if t < 0.4 then
+        return 0
+    else
+        return ((t - 0.4) / 0.6) ^ 4
+    end
+end

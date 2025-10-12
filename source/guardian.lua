@@ -36,14 +36,14 @@ function Guardian:init()
 
     Events.on_canvas_back:connect(function()
         if self.watching then
-            Events.on_game_over:emit()
+            self.suspiciousness += 10
         end
     end)
 end
 
 function Guardian:set_watch()
     self.watching = true
-    self.current_animation_id = 1
+    self.current_animation_id = 4
 
     local timer = pd.timer.new(math.random(1000, 5000), function()
         self:set_ignore()
@@ -60,9 +60,15 @@ function Guardian:set_ignore()
 end
 
 function Guardian:update(dt)
-    self.current_animation_id += dt * 10
-
     if self.watching then
+        self.current_animation_id -= dt * 6.6
+    else
+        self.current_animation_id += dt * 6.6
+    end
+
+    -- print(self.current_animation_id)
+
+    if self.current_animation_id < 0 then
         self.suspiciousness += dt * 10
 
         if self.suspiciousness > MAX_SUSPICIOUSNESS then
@@ -72,14 +78,16 @@ function Guardian:update(dt)
 end
 
 function Guardian:draw()
-    if self.watching then
-        spr_guardian_idle:drawImage(math.min(10, math.floor(self.current_animation_id)), 255, 0)
-    else
-        spr_guardian_away:drawImage(math.min(20, math.floor(self.current_animation_id)), 255, 0)
-    end
+    local anim_id = Utils:clamp(math.ceil(self.current_animation_id), 1, 4)
 
+    local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
+
+    spr_guardian_idle:drawImage(anim_id, 255 + math.random(-shakiness, shakiness), math.random(-shakiness, shakiness))
+
+    --[[
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.drawRect(255, 102, 145, 10)
     gfx.fillRect(255, 102, (self.suspiciousness / MAX_SUSPICIOUSNESS) * 145, 10)
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    ]] --
 end
