@@ -14,6 +14,12 @@ assert(spr_guardian_idle)
 local spr_guardian_sus = gfx.imagetable.new("img/spr_guardian_sus")
 assert(spr_guardian_sus)
 
+local spr_arrow_up = gfx.imagetable.new("img/spr_arrow_up")
+assert(spr_arrow_up)
+
+local spr_arrow_down = gfx.imagetable.new("img/spr_arrow_down")
+assert(spr_arrow_down)
+
 local MAX_SUSPICIOUSNESS <const> = 100
 
 Guardian = {}
@@ -83,6 +89,18 @@ function Guardian:draw()
     local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
 
     spr_guardian_idle:drawImage(anim_id, 255 + math.random(-shakiness, shakiness), math.random(-shakiness, shakiness))
+
+    local temp = gfx.image.new(40, 40)
+
+    gfx.pushContext(temp)
+    if self.watching then
+        spr_arrow_up:drawImage(math.ceil(self.current_animation_id / 2 % 2), 0, 0)
+    else
+        spr_arrow_down:drawImage(math.ceil(self.current_animation_id / 2 % 2), 0, 0)
+    end
+    gfx.popContext()
+
+    temp:drawFaded(73, 37, 0.5, gfx.image.kDitherTypeBayer2x2)
 
     --[[
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
