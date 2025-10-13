@@ -98,8 +98,10 @@ function Guardian:draw()
 
     local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
 
-    spr_guardian_idle:drawImage(anim_id, 255 + math.random(-shakiness, shakiness), 15 + math.random(-shakiness, shakiness))
+    spr_guardian_idle:drawImage(anim_id, 255 + math.random(-shakiness, shakiness),
+        15 + math.random(-shakiness, shakiness))
 
+    --[[
     local temp = gfx.image.new(40, 40)
 
     gfx.pushContext(temp)
@@ -111,6 +113,7 @@ function Guardian:draw()
     gfx.popContext()
 
     temp:drawFaded(73, 37, 0.5, gfx.image.kDitherTypeBayer2x2)
+    ]] --
 
     spr_waves:drawImage(math.ceil(self.current_animation_id / 2 % 2), 398 - 160, 206 - 60)
     spr_seafoam:drawImage(math.ceil(self.current_animation_id / 2 % 2), 398 - 160 - 86, 206 - 60)
