@@ -8,6 +8,8 @@ local spr_boat = gfx.image.new("img/spr_boat")
 assert(spr_boat)
 
 local COMPLETENESS_MAX <const> = 100
+local BOAT_X_START <const> = 334
+local BOAT_X_END <const> = 236
 
 Boat = {}
 Boat.completeness = 0
@@ -25,6 +27,6 @@ function Boat:update(dt)
 end
 
 function Boat:draw()
-    local x = pd.math.lerp(334, 236, self.completeness / 100)
-    spr_boat:draw(x, 120)
+    local boat_x = pd.math.lerp(BOAT_X_START, BOAT_X_END, self.completeness / 100)
+    spr_boat:draw(boat_x, 120)
 end

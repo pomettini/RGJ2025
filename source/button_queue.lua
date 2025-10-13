@@ -7,17 +7,6 @@ import "utils"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-local QUEUE_LENGTH <const> = 5
-local BUTTONS <const> =
-{
-    pd.kButtonA,
-    pd.kButtonB,
-    pd.kButtonDown,
-    pd.kButtonLeft,
-    pd.kButtonRight,
-    pd.kButtonUp
-}
-
 local spr_button_a = gfx.image.new("img/0_A")
 assert(spr_button_a)
 
@@ -39,6 +28,16 @@ assert(spr_button_up)
 local spr_frame = gfx.image.new("img/spr_frame")
 assert(spr_frame)
 
+local BUTTONS <const> =
+{
+    pd.kButtonA,
+    pd.kButtonB,
+    pd.kButtonDown,
+    pd.kButtonLeft,
+    pd.kButtonRight,
+    pd.kButtonUp
+}
+
 local SPRITE_BUTTONS <const> =
 {
     [pd.kButtonA] = spr_button_a,
@@ -48,6 +47,10 @@ local SPRITE_BUTTONS <const> =
     [pd.kButtonRight] = spr_button_right,
     [pd.kButtonUp] = spr_button_up
 }
+
+local QUEUE_LENGTH <const> = 5
+local CURRENT_BUTTON_ID <const> = 3
+local KEY_DISTANCE <const> = 64
 
 ButtonQueue = {}
 ButtonQueue.rng_seed = nil
@@ -77,7 +80,7 @@ function ButtonQueue:move_next()
 end
 
 function ButtonQueue:init()
-    self.rng_seed = math.random(1, 256)
+    self.rng_seed = math.random(1, math.maxinteger)
     self.current_index = 0
     self.current_button = 1
     self.current_tick = 0
@@ -109,11 +112,11 @@ function ButtonQueue:update(dt)
         self.current_tick = 0
     end
 
-    if self.offset_x > 64 then
+    if self.offset_x > KEY_DISTANCE then
         Events.on_canvas_back:emit()
         self:move_back()
         self.offset_x = 0
-    elseif self.offset_x < -64 then
+    elseif self.offset_x < -KEY_DISTANCE then
         Events.on_canvas_next:emit()
         self:move_next()
         self.offset_x = 0
@@ -127,11 +130,11 @@ end
 function ButtonQueue:draw()
     for i = 1, QUEUE_LENGTH do
         -- local delta_x = (432 / QUEUE_LENGTH) * (i - 1)
-        local start_x = 200 - ((64 * QUEUE_LENGTH) / 2)
-        local x = start_x + ((i - 1) * 64) + self.offset_x + 16
+        local start_x = 200 - ((KEY_DISTANCE * QUEUE_LENGTH) / 2)
+        local x = start_x + ((i - 1) * KEY_DISTANCE) + self.offset_x + 16
 
         local alpha = 0.25
-        if i == 3 then
+        if i == CURRENT_BUTTON_ID then
             alpha = 1
         end
 

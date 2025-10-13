@@ -27,6 +27,12 @@ local spr_seafoam = gfx.imagetable.new("img/spr_seafoam")
 assert(spr_seafoam)
 
 local MAX_SUSPICIOUSNESS <const> = 100
+local GUARDIAN_FRAME_START <const> = 1
+local GUARDIAN_FRAME_END <const> = 4
+local WAVES_FRAMES <const> = 2
+local SEAFORM_FRAMES <const> = 2
+local STATE_CHANGE_TIMER_MIN <const> = 1000
+local STATE_CHANGE_TIMER_MAX <const> = 5000
 
 Guardian = {}
 Guardian.watching = false
@@ -55,22 +61,22 @@ end
 
 function Guardian:set_watch()
     self.watching = true
-    self.current_animation_id = 4
+    self.current_animation_id = GUARDIAN_FRAME_END
 
     Events.on_watching:emit()
 
-    local timer = pd.timer.new(math.random(1000, 5000), function()
+    local timer = pd.timer.new(math.random(STATE_CHANGE_TIMER_MIN, STATE_CHANGE_TIMER_MAX), function()
         self:set_ignore()
     end)
 end
 
 function Guardian:set_ignore()
     self.watching = false
-    self.current_animation_id = 1
+    self.current_animation_id = GUARDIAN_FRAME_START
 
     Events.on_ignoring:emit()
 
-    local timer = pd.timer.new(math.random(1000, 5000), function()
+    local timer = pd.timer.new(math.random(STATE_CHANGE_TIMER_MIN, STATE_CHANGE_TIMER_MAX), function()
         self:set_watch()
     end)
 end
@@ -94,7 +100,7 @@ function Guardian:update(dt)
 end
 
 function Guardian:draw()
-    local anim_id = Utils:clamp(math.ceil(self.current_animation_id), 1, 4)
+    local anim_id = Utils:clamp(math.ceil(self.current_animation_id), GUARDIAN_FRAME_START, GUARDIAN_FRAME_END)
 
     local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
 
@@ -115,8 +121,8 @@ function Guardian:draw()
     temp:drawFaded(73, 37, 0.5, gfx.image.kDitherTypeBayer2x2)
     ]] --
 
-    spr_waves:drawImage(math.ceil(self.current_animation_id / 2 % 2), 398 - 160, 206 - 60)
-    spr_seafoam:drawImage(math.ceil(self.current_animation_id / 2 % 2), 398 - 160 - 86, 206 - 60)
+    spr_waves:drawImage(math.ceil(self.current_animation_id / 2 % WAVES_FRAMES), 398 - 160, 206 - 60)
+    spr_seafoam:drawImage(math.ceil(self.current_animation_id / 2 % SEAFORM_FRAMES), 398 - 160 - 86, 206 - 60)
 
     --[[
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)

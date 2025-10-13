@@ -1,8 +1,10 @@
 import "intro"
 import "game"
 
+local START_SCREEN <const> = Intro
+
 SceneManager = {}
-SceneManager.current = Intro
+SceneManager.current = START_SCREEN
 
 function SceneManager:init()
     self.current:init()

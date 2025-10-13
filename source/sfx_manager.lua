@@ -13,18 +13,20 @@ assert(music_loop)
 local music_loop_creepy = snd.fileplayer.new("music/loop_creepy")
 assert(music_loop_creepy)
 
+local FADE_TIME <const> = 1000
+
 SfxManager = {}
 
 function SfxManager:init()
     Events.on_watching:connect(function()
-        local fade = pd.timer.new(1000, 0, 1)
+        local fade = pd.timer.new(FADE_TIME, 0, 1)
         fade.updateCallback = function(timer)
             music_loop_creepy:setVolume(timer.value)
         end
     end)
 
     Events.on_ignoring:connect(function()
-        local fade = pd.timer.new(1000, 1, 0)
+        local fade = pd.timer.new(FADE_TIME, 1, 0)
         fade.updateCallback = function(timer)
             music_loop_creepy:setVolume(timer.value)
         end
