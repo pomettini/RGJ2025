@@ -1,7 +1,7 @@
 import "intro"
 import "game"
 
-local START_SCREEN <const> = Intro
+local START_SCREEN <const> = Game
 
 SceneManager = {}
 SceneManager.current = START_SCREEN

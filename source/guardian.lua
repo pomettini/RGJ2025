@@ -99,6 +99,34 @@ function Guardian:update(dt)
     end
 end
 
+function Guardian:draw_sus_bar()
+    local SUS_BAR_WIDTH <const> = 80
+    local SUS_BAR_HEIGHT <const> = 5
+    local SUS_BAR_RADIUS <const> = 5
+
+    gfx.setStrokeLocation(gfx.kStrokeOutside)
+    gfx.setLineWidth(3)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.drawRoundRect(
+        255 + 30, 102,
+        SUS_BAR_WIDTH, SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
+    gfx.fillRoundRect(
+        255 + 30,
+        102,
+        SUS_BAR_WIDTH, SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
+    gfx.setColor(gfx.kColorWhite)
+    gfx.setLineWidth(1)
+    gfx.drawRoundRect(
+        255 + 30,
+        102,
+        SUS_BAR_WIDTH, SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
+    gfx.fillRoundRect(
+        255 + 30,
+        102,
+        SUS_BAR_WIDTH - (SUS_BAR_WIDTH * (self.suspiciousness / MAX_SUSPICIOUSNESS)),
+        SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
+end
+
 function Guardian:draw()
     local anim_id = Utils:clamp(math.ceil(self.current_animation_id), GUARDIAN_FRAME_START, GUARDIAN_FRAME_END)
 
@@ -124,10 +152,5 @@ function Guardian:draw()
     spr_waves:drawImage(math.ceil(self.current_animation_id / 2 % WAVES_FRAMES), 398 - 160, 206 - 60)
     spr_seafoam:drawImage(math.ceil(self.current_animation_id / 2 % SEAFORM_FRAMES), 398 - 160 - 86, 206 - 60)
 
-    --[[
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawRect(255, 102, 145, 10)
-    gfx.fillRect(255, 102, (self.suspiciousness / MAX_SUSPICIOUSNESS) * 145, 10)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
-    ]] --
+    self:draw_sus_bar()
 end

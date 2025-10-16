@@ -2,6 +2,7 @@ import "CoreLibs/crank"
 import "CoreLibs/graphics"
 import "scene_manager"
 import "game"
+import "../utils"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -23,6 +24,8 @@ assert(spr_tutorial_eye)
 local spr_screenshot = gfx.image.new("img/spr_screenshot")
 assert(spr_screenshot)
 
+local spr_screenshot_blurred = Utils:cache_blurred_frame(spr_screenshot, 3, 2, gfx.image.kDitherTypeBayer2x2)
+
 Tutorial = {}
 Tutorial.offset_x = 0
 
@@ -33,8 +36,7 @@ end
 function Tutorial:update()
     gfx.clear(gfx.kColorBlack)
 
-    -- spr_screenshot:drawBlurred(0, 0, 2, 1, gfx.image.kDitherTypeBayer2x2)
-    spr_screenshot:draw(0, 0)
+    spr_screenshot_blurred:draw(0, 0)
 
     spr_tutorial[1]:draw(self.offset_x, 0)
     spr_tutorial[2]:draw(self.offset_x + 400, 0)

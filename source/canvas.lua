@@ -18,6 +18,15 @@ assert(spr_skull)
 local spr_penelope_missing_bit = gfx.image.new("img/spr_penelope_missing_bit")
 assert(spr_penelope_missing_bit)
 
+local spr_skull_faded = Utils:cache_faded_frame(spr_skull, 0.5, gfx.image.kDitherTypeFloydSteinberg)
+
+local temp = gfx.image.new(165, 179)
+gfx.pushContext(temp)
+spr_canvas:drawImage(50, 0, 0)
+gfx.popContext()
+
+local spr_canvas_faded = temp:fadedImage(0.2, gfx.image.kDitherTypeFloydSteinberg)
+
 local COMPLETENESS_MAX <const> = 50
 local FRAMES_MAX <const> = 6
 
@@ -52,16 +61,11 @@ function Canvas:update(dt)
 end
 
 function Canvas:draw()
-    local temp = gfx.image.new(165, 179)
-    gfx.pushContext(temp)
-    spr_canvas:drawImage(50, 0, 0)
-    gfx.popContext()
-
-    temp:drawFaded(100, 17, 0.2, gfx.image.kDitherTypeFloydSteinberg)
+    spr_canvas_faded:draw(100, 17)
 
     spr_penelope:drawImage(self.current_frame, 0, 7)
     spr_canvas:drawImage(self.completeness, 100, 17)
 
-    spr_skull:drawFaded(180 - 19, 110 - 21, 0.5, gfx.image.kDitherTypeFloydSteinberg)
+    spr_skull_faded:draw(180 - 19, 110 - 21)
     spr_penelope_missing_bit:draw(173, 206 - 14)
 end

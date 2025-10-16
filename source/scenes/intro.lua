@@ -23,6 +23,8 @@ function Intro:init()
     self.current_screen = 1
 
     SfxManager:menu_start()
+
+    Utils:cache_faded_frames(spr_intro[1], 15, gfx.image.kDitherTypeBayer2x2)
 end
 
 function Intro:update()
