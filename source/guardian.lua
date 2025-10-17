@@ -103,37 +103,43 @@ function Guardian:draw_sus_bar()
     local SUS_BAR_WIDTH <const> = 80
     local SUS_BAR_HEIGHT <const> = 5
     local SUS_BAR_RADIUS <const> = 5
+    local SUS_BAR_Y <const> = 52
 
     gfx.setStrokeLocation(gfx.kStrokeOutside)
     gfx.setLineWidth(3)
     gfx.setColor(gfx.kColorBlack)
     gfx.drawRoundRect(
-        255 + 30, 102,
+        255 + 30,
+        SUS_BAR_Y,
         SUS_BAR_WIDTH, SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
     gfx.fillRoundRect(
         255 + 30,
-        102,
+        SUS_BAR_Y,
         SUS_BAR_WIDTH, SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
     gfx.setColor(gfx.kColorWhite)
     gfx.setLineWidth(1)
     gfx.drawRoundRect(
         255 + 30,
-        102,
+        SUS_BAR_Y,
         SUS_BAR_WIDTH, SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
     gfx.fillRoundRect(
         255 + 30,
-        102,
+        SUS_BAR_Y,
         SUS_BAR_WIDTH - (SUS_BAR_WIDTH * (self.suspiciousness / MAX_SUSPICIOUSNESS)),
         SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
 end
 
-function Guardian:draw()
+function Guardian:draw(anim_step)
     local anim_id = Utils:clamp(math.ceil(self.current_animation_id), GUARDIAN_FRAME_START, GUARDIAN_FRAME_END)
 
     local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
 
-    spr_guardian_idle:drawImage(anim_id, 255 + math.random(-shakiness, shakiness),
-        15 + math.random(-shakiness, shakiness))
+    spr_guardian_idle:drawImage
+    (
+        anim_id,
+        252 + math.random(-shakiness, shakiness),
+        58 + math.random(-shakiness, shakiness)
+    )
 
     --[[
     local temp = gfx.image.new(40, 40)
@@ -149,8 +155,13 @@ function Guardian:draw()
     temp:drawFaded(73, 37, 0.5, gfx.image.kDitherTypeBayer2x2)
     ]] --
 
-    spr_waves:drawImage(math.ceil(self.current_animation_id / 2 % WAVES_FRAMES), 398 - 160, 206 - 60)
-    spr_seafoam:drawImage(math.ceil(self.current_animation_id / 2 % SEAFORM_FRAMES), 398 - 160 - 86, 206 - 60)
+    local step_2 = math.ceil(anim_step / 2 % WAVES_FRAMES)
+    local step_2_inverted = 3 - step_2
+
+    spr_waves:drawImage(step_2, 398 - 32, 206 - 40)
+    spr_waves:drawImage(step_2_inverted, 398 - 64, 206 - 40)
+    spr_waves:drawImage(step_2, 398 - 96, 206 - 40)
+    spr_seafoam:drawImage(step_2, 216, 156)
 
     self:draw_sus_bar()
 end

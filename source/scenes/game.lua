@@ -7,20 +7,15 @@ import "../button_queue"
 import "../canvas"
 import "../guardian"
 import "../sfx_manager"
+import "../ui_elements"
 import "../utils"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-local spr_bg = gfx.image.new("img/spr_bg")
-assert(spr_bg)
-
-local spr_hold = gfx.imagetable.new("img/spr_hold")
-assert(spr_hold)
-
 Game = {}
 -- Last minute hack
-Game.anim_counter = 0
+Game.anim_counter = 1
 
 function Game:init()
     pd.resetElapsedTime()
@@ -55,7 +50,7 @@ function Game:init()
     SfxManager:loop_start()
 
     -- Last minute hack
-    self.anim_counter = 0
+    self.anim_counter = 1
 end
 
 function Game:update()
@@ -69,18 +64,21 @@ function Game:update()
     Canvas:update(dt)
     Guardian:update(dt)
 
-    spr_bg:draw(0, 0)
-
     Boat:draw()
-    Guardian:draw()
+
+    UIElements:draw_top_elements(self.anim_counter)
+    UIElements:draw_bg()
+    UIElements:draw_lighthouse(self.anim_counter)
+
+    Guardian:draw(self.anim_counter)
     ButtonQueue:draw()
     Canvas:draw()
 
     -- All the code written below is a last minute hack
-    self.anim_counter += dt * 10
+    self.anim_counter += dt * 6.6
 
     local current, _, _ = pd.getButtonState()
     if current ~= 0 then
-        spr_hold:drawImage(math.ceil(self.anim_counter / 2 % 2), 200 - 31, 206 - 24 - 12)
+        UIElements:draw_hold(self.anim_counter)
     end
 end
