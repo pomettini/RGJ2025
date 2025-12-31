@@ -14,6 +14,15 @@ assert(spr_guardian_idle)
 local spr_guardian_sus = gfx.imagetable.new("img/spr_guardian_sus")
 assert(spr_guardian_sus)
 
+local spr_eye_background = gfx.image.new("img/spr_eye_background")
+assert(spr_eye_background)
+
+local spr_iris = gfx.imagetable.new("img/spr_eye_iris")
+assert(spr_iris)
+
+local spr_veins = gfx.imagetable.new("img/spr_eye_veins")
+assert(spr_veins)
+
 local spr_arrow_up = gfx.imagetable.new("img/spr_arrow_up")
 assert(spr_arrow_up)
 
@@ -38,6 +47,7 @@ Guardian = {}
 Guardian.watching = false
 Guardian.suspiciousness = 0
 Guardian.current_animation_id = 1
+Guardian.crank_moving = false
 
 function Guardian:init()
     self.watching = false
@@ -97,6 +107,14 @@ function Guardian:update(dt)
             Events.on_game_over:emit()
         end
     end
+
+    local crank_change, _ = playdate.getCrankChange()
+
+    if crank_change < 0 then
+        self.crank_moving = true
+    else
+        self.crank_moving = false
+    end
 end
 
 function Guardian:draw_sus_bar()
@@ -131,15 +149,29 @@ end
 
 function Guardian:draw(anim_step)
     local anim_id = Utils:clamp(math.ceil(self.current_animation_id), GUARDIAN_FRAME_START, GUARDIAN_FRAME_END)
+    local veins_state = 1 + math.ceil((self.suspiciousness / MAX_SUSPICIOUSNESS) * 9)
 
-    local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
+    -- local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
+    local shakiness = self.crank_moving and 3 or 0
 
-    spr_guardian_idle:drawImage
-    (
-        anim_id,
-        252 + math.random(-shakiness, shakiness),
-        58 + math.random(-shakiness, shakiness)
-    )
+    if anim_id ~= 1 then
+        spr_guardian_idle:drawImage(anim_id, 252, 58)
+    else
+        spr_eye_background:draw(
+            252 + math.random(-shakiness, shakiness),
+            58 + math.random(-shakiness, shakiness)
+        )
+        spr_veins:drawImage(
+            veins_state,
+            252 + math.random(-shakiness, shakiness),
+            58 + math.random(-shakiness, shakiness)
+        )
+        spr_iris:drawImage(
+            5,
+            252 + math.random(-shakiness, shakiness),
+            58 + math.random(-shakiness, shakiness)
+        )
+    end
 
     --[[
     local temp = gfx.image.new(40, 40)
@@ -163,5 +195,5 @@ function Guardian:draw(anim_step)
     spr_waves:drawImage(step_2, 398 - 96, 206 - 40)
     spr_seafoam:drawImage(step_2, 216, 156)
 
-    self:draw_sus_bar()
+    -- self:draw_sus_bar()
 end
