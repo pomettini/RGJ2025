@@ -61,11 +61,11 @@ function Canvas:update(dt)
 end
 
 function Canvas:draw()
-    spr_canvas_faded:draw(100, 17)
-
     spr_penelope:drawImage(self.current_frame, 0, 7)
-    spr_canvas:drawImage(self.completeness, 100, 17)
-
-    spr_skull_faded:draw(180 - 19, 110 - 21)
     spr_penelope_missing_bit:draw(173, 206 - 14)
+
+    spr_canvas_faded:draw(100, 17 + 7)
+    spr_canvas:drawImage(self.completeness, 100, 17 + 7)
+
+    spr_skull_faded:draw(180 - 19, 110 - 21 + 7)
 end

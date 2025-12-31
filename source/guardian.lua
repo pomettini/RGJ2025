@@ -107,14 +107,6 @@ function Guardian:update(dt)
             Events.on_game_over:emit()
         end
     end
-
-    local crank_change, _ = playdate.getCrankChange()
-
-    if crank_change < 0 then
-        self.crank_moving = true
-    else
-        self.crank_moving = false
-    end
 end
 
 function Guardian:draw_sus_bar()
@@ -152,7 +144,7 @@ function Guardian:draw(anim_step)
     local veins_state = 1 + math.ceil((self.suspiciousness / MAX_SUSPICIOUSNESS) * 9)
 
     -- local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
-    local shakiness = self.crank_moving and 3 or 0
+    local shakiness = self.crank_moving and 5 or 0
 
     if anim_id ~= 1 then
         spr_guardian_idle:drawImage(anim_id, 252, 58)
