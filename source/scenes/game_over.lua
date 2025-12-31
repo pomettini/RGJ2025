@@ -14,7 +14,10 @@ GameOver.timer = 0
 function GameOver:init()
     self.timer = 0
 
+    SfxManager:crank_sfx_stop()
+
     SfxManager:loop_stop()
+    SfxManager:game_over_start()
 end
 
 function GameOver:update()

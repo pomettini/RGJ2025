@@ -47,7 +47,11 @@ function Game:init()
     end)
 
     SfxManager:menu_stop()
+    SfxManager:game_over_stop()
     SfxManager:loop_start()
+
+    SfxManager:crank_sfx_start()
+    SfxManager:crank_sfx_stop()
 
     -- Last minute hack
     self.anim_counter = 1
@@ -80,5 +84,13 @@ function Game:update()
     local current, _, _ = pd.getButtonState()
     if current ~= 0 then
         UIElements:draw_hold(self.anim_counter)
+    end
+
+    local crank_change, _ = playdate.getCrankChange()
+
+    if crank_change ~= 0 then
+        SfxManager:crank_sfx_play()
+    else
+        SfxManager:crank_sfx_stop()
     end
 end

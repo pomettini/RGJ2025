@@ -13,6 +13,12 @@ assert(music_loop)
 local music_loop_creepy = snd.fileplayer.new("music/loop_creepy")
 assert(music_loop_creepy)
 
+local music_game_over = snd.fileplayer.new("music/game_over")
+assert(music_game_over)
+
+local crank_sfx = snd.fileplayer.new("music/crank_sfx")
+assert(crank_sfx)
+
 local FADE_TIME <const> = 1000
 
 SfxManager = {}
@@ -52,4 +58,24 @@ end
 
 function SfxManager:menu_stop()
     music_menu:stop()
+end
+
+function SfxManager:game_over_start()
+    music_game_over:play(1)
+end
+
+function SfxManager:game_over_stop()
+    music_game_over:stop()
+end
+
+function SfxManager:crank_sfx_start()
+    crank_sfx:play(0)
+end
+
+function SfxManager:crank_sfx_play()
+    crank_sfx:setVolume(1)
+end
+
+function SfxManager:crank_sfx_stop()
+    crank_sfx:setVolume(0)
 end
