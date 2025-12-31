@@ -2,6 +2,7 @@ import "CoreLibs/crank"
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "events"
+import "guardian"
 import "utils"
 
 local pd <const> = playdate
@@ -99,11 +100,17 @@ function ButtonQueue:update(dt)
     local change, _ = pd.getCrankChange()
     local current, _, released = pd.getButtonState()
 
+    Guardian.crank_moving = false
+
     if current == self.current_button then
         self.offset_x -= change
 
         if change > 0 then
             self.current_tick += change
+        end
+
+        if change < 0 then
+            Guardian.crank_moving = true
         end
     end
 
