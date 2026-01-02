@@ -74,27 +74,48 @@ function Game:init()
 
     Events.on_canvas_next:connect(function()
         if Tutorial.state == TUTORIAL_MOVE_FORWARD then
-            Tutorial.state += 1
+            Tutorial.moved_forward_wrong_way = false
+            Tutorial.move_forward_count -= 1
+            if Tutorial.move_forward_count <= 0 then
+                Tutorial.state += 1
+            end
+            return
+        end
+        if Tutorial.state == TUTORIAL_MOVE_BACKWARD then
+            Tutorial.moved_backward_wrong_way = true
+            return
         end
         if Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS then
             Guardian.suspiciousness = 0
             Tutorial.state += 1
+            return
         end
         if Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS_SECOND then
             Guardian.suspiciousness = 0
             Tutorial.state += 1
+            return
         end
     end)
 
     Events.on_canvas_back:connect(function()
+        if Tutorial.state == TUTORIAL_MOVE_FORWARD then
+            Tutorial.moved_forward_wrong_way = true
+            return
+        end
         if Tutorial.state == TUTORIAL_MOVE_BACKWARD then
-            Tutorial.state += 1
+            Tutorial.moved_backward_wrong_way = false
+            Tutorial.move_backward_count -= 1
+            if Tutorial.move_backward_count <= 0 then
+                Tutorial.state += 1
+            end
+            return
         end
         if Tutorial.state == TUTORIAL_MOVE_BACKWARD_WITH_CANVAS then
             -- Reset everything after tutorial state
             reset_state()
 
             Tutorial.state += 1
+            return
         end
     end)
 
@@ -119,11 +140,18 @@ function Game:update()
         if ButtonQueue.current_button == current then
             Tutorial.state += 1
         end
+        if ButtonQueue.current_button ~= current and current ~= 0 then
+            Tutorial.pressed_wrong_button = true
+        end
 
         UIElements:draw_faded_bg()
         ButtonQueue:draw()
 
-        draw_label("Hold the button below", 10, 183)
+        if Tutorial.pressed_wrong_button == false then
+            draw_label("Hold the button below", 10, 10)
+        else
+            draw_label("That's not the correct button!", 10, 10)
+        end
     elseif Tutorial.state == TUTORIAL_MOVE_FORWARD then
         ButtonQueue:update(dt)
 
@@ -133,7 +161,13 @@ function Game:update()
         Guardian.current_animation_id = 1
         Guardian:draw(self.anim_counter, true, true)
 
-        draw_label("Hold the button below and turn the crank forward", 10, 183)
+        if Tutorial.moved_forward_wrong_way == false and Tutorial.move_forward_count < 3 then
+            draw_label("Good! Let's do it again!", 10, 10)
+        elseif Tutorial.moved_forward_wrong_way == false then
+            draw_label("Hold the button below and turn the crank forward", 10, 10)
+        else
+            draw_label("That's the wrong way, turn the crank forward!", 10, 10)
+        end
 
         pd.ui.crankIndicator:draw(
             -312 + 100 - (88 / 2),
@@ -148,7 +182,13 @@ function Game:update()
         Guardian.current_animation_id = 4
         Guardian:draw(self.anim_counter, true, true)
 
-        draw_label("Now turn it backwards", 10, 183)
+        if Tutorial.moved_backward_wrong_way == false and Tutorial.move_backward_count < 3 then
+            draw_label("Nice! Do it again as well!", 10, 10)
+        elseif Tutorial.moved_backward_wrong_way == false then
+            draw_label("Now turn it backwards", 10, 10)
+        else
+            draw_label("That's the wrong way, turn the crank backwards!", 10, 10)
+        end
 
         pd.ui.crankIndicator.clockwise = false
         pd.ui.crankIndicator:draw(
@@ -169,8 +209,8 @@ function Game:update()
 
         Canvas:draw()
 
-        draw_label("WARNING: Eye is open! When time passes", 10, 183 - 16)
-        draw_label("or canvas is unwinded, it will get irritated!", 10, 183)
+        draw_label("WARNING: Eye is open! When time passes", 10, 10)
+        draw_label("or canvas is unwinded, it will get irritated!", 10, 10 + 16)
     elseif Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS_SECOND then
         ButtonQueue:update(dt)
         Canvas:update(dt)
@@ -185,8 +225,8 @@ function Game:update()
 
         Canvas:draw()
 
-        draw_label("WARNING: You don't want to complete the canvas", 10, 183 - 16)
-        draw_label("or you will have to get married!", 10, 183)
+        draw_label("WARNING: You don't want to complete the canvas", 10, 10)
+        draw_label("or you will have to get married!", 10, 10 + 16)
     elseif Tutorial.state == TUTORIAL_MOVE_BACKWARD_WITH_CANVAS then
         ButtonQueue:update(dt)
         Canvas:update(dt)
@@ -199,8 +239,8 @@ function Game:update()
 
         Canvas:draw()
 
-        draw_label("It's distracted, finally!", 10, 183 - 16)
-        draw_label("quickly, unwind the canvas!", 10, 183)
+        draw_label("It's distracted, finally!", 10, 10)
+        draw_label("quickly, unwind the canvas!", 10, 10 + 16)
     else
         Boat:update(dt)
         ButtonQueue:update(dt)
@@ -236,7 +276,7 @@ end
 local menu = pd.getSystemMenu()
 
 local _, _ = menu:addMenuItem("Reset", function()
-    Tutorial.state = 1
+    Tutorial:reset()
     Game:init()
 
     SfxManager:loop_stop()
