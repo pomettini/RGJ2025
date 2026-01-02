@@ -49,6 +49,10 @@ Guardian.suspiciousness = 0
 Guardian.current_animation_id = 1
 Guardian.crank_moving = false
 
+function Guardian:get_max_suspiciousness()
+    return MAX_SUSPICIOUSNESS
+end
+
 function Guardian:init()
     self.watching = false
     self.suspiciousness = 0
@@ -98,8 +102,6 @@ function Guardian:update(dt)
         self.current_animation_id += dt * 6.6
     end
 
-    -- print(self.current_animation_id)
-
     if self.current_animation_id < 0 then
         self.suspiciousness += dt * 10
 
@@ -139,12 +141,15 @@ function Guardian:draw_sus_bar()
         SUS_BAR_HEIGHT, SUS_BAR_RADIUS)
 end
 
-function Guardian:draw(anim_step)
+function Guardian:draw(anim_step, hide_bg, hide_bar)
     local anim_id = Utils:clamp(math.ceil(self.current_animation_id), GUARDIAN_FRAME_START, GUARDIAN_FRAME_END)
     local veins_state = 1 + math.ceil((self.suspiciousness / MAX_SUSPICIOUSNESS) * 9)
 
     -- local shakiness = math.ceil(Utils:ease(self.suspiciousness / MAX_SUSPICIOUSNESS) * 3)
-    local shakiness = self.crank_moving and 5 or 0
+    local shakiness = 0
+    if hide_bg == nil or hide_bar == nil then
+        shakiness = self.crank_moving and 5 or 0
+    end
 
     if anim_id ~= 1 then
         spr_guardian_idle:drawImage(anim_id, 252, 58)
@@ -179,13 +184,17 @@ function Guardian:draw(anim_step)
     temp:drawFaded(73, 37, 0.5, gfx.image.kDitherTypeBayer2x2)
     ]] --
 
-    local step_2 = math.ceil(anim_step / 2 % WAVES_FRAMES)
-    local step_2_inverted = 3 - step_2
+    if hide_bg == nil then
+        local step_2 = math.ceil(anim_step / 2 % WAVES_FRAMES)
+        local step_2_inverted = 3 - step_2
 
-    spr_waves:drawImage(step_2, 398 - 32, 206 - 40)
-    spr_waves:drawImage(step_2_inverted, 398 - 64, 206 - 40)
-    spr_waves:drawImage(step_2, 398 - 96, 206 - 40)
-    spr_seafoam:drawImage(step_2, 216, 156)
+        spr_waves:drawImage(step_2, 398 - 32, 206 - 40)
+        spr_waves:drawImage(step_2_inverted, 398 - 64, 206 - 40)
+        spr_waves:drawImage(step_2, 398 - 96, 206 - 40)
+        spr_seafoam:drawImage(step_2, 216, 156)
+    end
 
-    -- self:draw_sus_bar()
+    if hide_bar == nil then
+        self:draw_sus_bar()
+    end
 end

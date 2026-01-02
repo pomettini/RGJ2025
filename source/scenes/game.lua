@@ -1,6 +1,7 @@
 import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "game_over"
+import "tutorial"
 import "victory_screen"
 import "../boat"
 import "../button_queue"
@@ -13,9 +14,34 @@ import "../utils"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
+-- local font_pixieval = gfx.font.new("fonts/font-Bitmore-Medieval-Outlined")
+-- assert(font_pixieval)
+
+-- gfx.setFont(font_pixieval)
+
 Game = {}
 -- Last minute hack
 Game.anim_counter = 1
+
+local function draw_label(text, offset_x, offset_y)
+    local x, y = gfx.getTextSize(text)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(offset_x, offset_y, x, y)
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    gfx.drawText(text, offset_x, offset_y)
+    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+end
+
+local function reset_state()
+    Guardian:init()
+
+    SfxManager:menu_stop()
+    SfxManager:game_over_stop()
+    SfxManager:loop_start()
+
+    SfxManager:crank_sfx_start()
+    SfxManager:crank_sfx_stop()
+end
 
 function Game:init()
     pd.resetElapsedTime()
@@ -35,7 +61,7 @@ function Game:init()
     Boat:init()
     ButtonQueue:init()
     Canvas:init()
-    Guardian:init()
+    -- Guardian:init()
     SfxManager:init()
 
     Events.on_game_over:connect(function()
@@ -46,12 +72,35 @@ function Game:init()
         SceneManager:change_scene(VictoryScreen)
     end)
 
-    SfxManager:menu_stop()
-    SfxManager:game_over_stop()
-    SfxManager:loop_start()
+    Events.on_canvas_next:connect(function()
+        if Tutorial.state == TUTORIAL_MOVE_FORWARD then
+            Tutorial.state += 1
+        end
+        if Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS then
+            Guardian.suspiciousness = 0
+            Tutorial.state += 1
+        end
+        if Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS_SECOND then
+            Guardian.suspiciousness = 0
+            Tutorial.state += 1
+        end
+    end)
 
-    SfxManager:crank_sfx_start()
-    SfxManager:crank_sfx_stop()
+    Events.on_canvas_back:connect(function()
+        if Tutorial.state == TUTORIAL_MOVE_BACKWARD then
+            Tutorial.state += 1
+        end
+        if Tutorial.state == TUTORIAL_MOVE_BACKWARD_WITH_CANVAS then
+            -- Reset everything after tutorial state
+            reset_state()
+
+            Tutorial.state += 1
+        end
+    end)
+
+    if Tutorial.state ~= 1 then
+        reset_state()
+    end
 
     -- Last minute hack
     self.anim_counter = 1
@@ -63,20 +112,109 @@ function Game:update()
     local dt = pd.getElapsedTime()
     pd.resetElapsedTime()
 
-    Boat:update(dt)
-    ButtonQueue:update(dt)
-    Canvas:update(dt)
-    Guardian:update(dt)
+    if Tutorial.state == TUTORIAL_KEYS then
+        ButtonQueue:update(dt)
 
-    Boat:draw()
+        local current, _, _ = pd.getButtonState()
+        if ButtonQueue.current_button == current then
+            Tutorial.state += 1
+        end
 
-    UIElements:draw_top_elements(self.anim_counter)
-    UIElements:draw_bg()
-    UIElements:draw_lighthouse(self.anim_counter)
+        UIElements:draw_faded_bg()
+        ButtonQueue:draw()
 
-    Guardian:draw(self.anim_counter)
-    ButtonQueue:draw()
-    Canvas:draw()
+        draw_label("Hold the button below", 10, 183)
+    elseif Tutorial.state == TUTORIAL_MOVE_FORWARD then
+        ButtonQueue:update(dt)
+
+        UIElements:draw_faded_bg()
+        ButtonQueue:draw()
+
+        Guardian.current_animation_id = 1
+        Guardian:draw(self.anim_counter, true, true)
+
+        draw_label("Hold the button below and turn the crank forward", 10, 183)
+
+        pd.ui.crankIndicator:draw(
+            -312 + 100 - (88 / 2),
+            -184 + 120 - (52 / 2)
+        )
+    elseif Tutorial.state == TUTORIAL_MOVE_BACKWARD then
+        ButtonQueue:update(dt)
+
+        UIElements:draw_faded_bg()
+        ButtonQueue:draw()
+
+        Guardian.current_animation_id = 4
+        Guardian:draw(self.anim_counter, true, true)
+
+        draw_label("Now turn it backwards", 10, 183)
+
+        pd.ui.crankIndicator.clockwise = false
+        pd.ui.crankIndicator:draw(
+            -312 + 100 - (88 / 2),
+            -184 + 120 - (52 / 2)
+        )
+    elseif Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS then
+        ButtonQueue:update(dt)
+        Canvas:update(dt)
+
+        UIElements:draw_faded_bg()
+        ButtonQueue:draw()
+
+        Guardian.current_animation_id = 1
+        Guardian.suspiciousness += dt * 10
+        Guardian.suspiciousness = Utils:clamp(Guardian.suspiciousness, 0, Guardian:get_max_suspiciousness())
+        Guardian:draw(self.anim_counter, true)
+
+        Canvas:draw()
+
+        draw_label("WARNING: Eye is open! When time passes", 10, 183 - 16)
+        draw_label("or canvas is unwinded, it will get irritated!", 10, 183)
+    elseif Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS_SECOND then
+        ButtonQueue:update(dt)
+        Canvas:update(dt)
+
+        UIElements:draw_faded_bg()
+        ButtonQueue:draw()
+
+        Guardian.current_animation_id = 1
+        Guardian.suspiciousness += dt * 10
+        Guardian.suspiciousness = Utils:clamp(Guardian.suspiciousness, 0, Guardian:get_max_suspiciousness())
+        Guardian:draw(self.anim_counter, true)
+
+        Canvas:draw()
+
+        draw_label("WARNING: You don't want to complete the canvas", 10, 183 - 16)
+        draw_label("or you will have to get married!", 10, 183)
+    elseif Tutorial.state == TUTORIAL_MOVE_BACKWARD_WITH_CANVAS then
+        ButtonQueue:update(dt)
+        Canvas:update(dt)
+
+        UIElements:draw_faded_bg()
+        ButtonQueue:draw()
+
+        Guardian.current_animation_id = 4
+        Guardian:draw(self.anim_counter, true)
+
+        Canvas:draw()
+
+        draw_label("It's distracted, finally!", 10, 183 - 16)
+        draw_label("quickly, unwind the canvas!", 10, 183)
+    else
+        Boat:update(dt)
+        ButtonQueue:update(dt)
+        Canvas:update(dt)
+        Guardian:update(dt)
+
+        Boat:draw()
+        UIElements:draw_top_elements(self.anim_counter)
+        UIElements:draw_bg()
+        UIElements:draw_lighthouse(self.anim_counter)
+        Guardian:draw(self.anim_counter)
+        ButtonQueue:draw()
+        Canvas:draw()
+    end
 
     -- All the code written below is a last minute hack
     self.anim_counter += dt * 6.6
@@ -94,3 +232,12 @@ function Game:update()
         SfxManager:crank_sfx_stop()
     end
 end
+
+local menu = pd.getSystemMenu()
+
+local _, _ = menu:addMenuItem("Reset", function()
+    Tutorial.state = 1
+    Game:init()
+
+    SfxManager:loop_stop()
+end)

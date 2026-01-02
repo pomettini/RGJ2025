@@ -1,5 +1,10 @@
+import "utils"
+
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+
+local spr_faded_bg = gfx.image.new("img/spr_faded_bg_eye_closed.png")
+assert(spr_faded_bg)
 
 local spr_bg = gfx.image.new("img/spr_bg")
 assert(spr_bg)
@@ -19,6 +24,8 @@ assert(spr_medium_waves)
 local spr_lighthouse = gfx.imagetable.new("img/spr_lighthouse")
 assert(spr_lighthouse)
 
+local spr_faded_bg_cached = Utils:cache_faded_frame(spr_faded_bg, 0.2, gfx.image.kDitherTypeFloydSteinberg)
+
 UIElements = {}
 
 function UIElements:init()
@@ -27,12 +34,16 @@ end
 function UIElements:update()
 end
 
+function UIElements:draw_faded_bg()
+    spr_faded_bg_cached:draw(0, 0)
+end
+
 function UIElements:draw_bg()
     spr_bg:draw(0, 0)
 end
 
 function UIElements:draw_hold(anim_step)
-    spr_hold:drawImage(math.ceil(anim_step / 2 % 2), 200 - 31, 206 - 24 - 12)
+    -- spr_hold:drawImage(math.ceil(anim_step / 2 % 2), 200 - 31, 206 - 24 - 12)
 end
 
 function UIElements:draw_top_elements(anim_step)

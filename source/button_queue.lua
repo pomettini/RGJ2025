@@ -156,6 +156,6 @@ function ButtonQueue:draw()
     local current, _, _ = pd.getButtonState()
 
     if self.show_indicator and current ~= 0 then
-        playdate.ui.crankIndicator:draw(0, 0)
+        -- playdate.ui.crankIndicator:draw(0, 0)
     end
 end
