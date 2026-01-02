@@ -260,7 +260,7 @@ function Game:update()
     self.anim_counter += dt * 6.6
 
     local current, _, _ = pd.getButtonState()
-    if current ~= 0 then
+    if current == 0 then
         UIElements:draw_hold(self.anim_counter)
     end
 
