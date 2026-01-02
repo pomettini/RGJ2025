@@ -43,7 +43,7 @@ function UIElements:draw_bg()
 end
 
 function UIElements:draw_hold(anim_step)
-    -- spr_hold:drawImage(math.ceil(anim_step / 2 % 2), 200 - 31, 206 - 24 - 12)
+    spr_hold:drawImage(math.ceil(anim_step / 2 % 2), 200 - 31, 206 - 24 - 12)
 end
 
 function UIElements:draw_top_elements(anim_step)
