@@ -1,6 +1,7 @@
 import "CoreLibs/graphics"
 import "CoreLibs/animation"
 import "events"
+import "scenes/game_over"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
@@ -106,7 +107,7 @@ function Guardian:update(dt)
         self.suspiciousness += dt * 10
 
         if self.suspiciousness > MAX_SUSPICIOUSNESS then
-            Events.on_game_over:emit()
+            Events.on_game_over:emit(GAME_OVER_PATIENCE_LOST)
         end
     end
 end

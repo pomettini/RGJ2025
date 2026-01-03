@@ -76,7 +76,8 @@ function Game:init()
     -- Guardian:init()
     SfxManager:init()
 
-    Events.on_game_over:connect(function()
+    Events.on_game_over:connect(function(cause)
+        GameOver.cause = cause
         SceneManager:change_scene(GameOver)
     end)
 
@@ -291,7 +292,7 @@ function Game:update()
 
     local crank_change, _ = playdate.getCrankChange()
 
-    if crank_change ~= 0 then
+    if crank_change ~= 0 and current ~= 0 then
         SfxManager:crank_sfx_play()
     else
         SfxManager:crank_sfx_stop()

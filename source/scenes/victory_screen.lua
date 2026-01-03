@@ -19,7 +19,6 @@ end
 
 function VictoryScreen:update()
     gfx.clear(gfx.kColorBlack)
-    spr_victory:draw(0, 0)
 
     self.timer += 0.01
 
@@ -28,4 +27,6 @@ function VictoryScreen:update()
     if pd.buttonJustReleased(pd.kButtonA) and self.timer > 0.66 then
         SceneManager:change_scene(Game)
     end
+
+    spr_victory:draw(0, 0)
 end
