@@ -23,6 +23,8 @@ function VictoryScreen:update()
 
     self.timer += 0.01
 
+    SfxManager:crank_sfx_stop()
+
     if pd.buttonJustReleased(pd.kButtonA) and self.timer > 0.66 then
         SceneManager:change_scene(Game)
     end

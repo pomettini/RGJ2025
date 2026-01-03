@@ -73,7 +73,7 @@ function SfxManager:crank_sfx_start()
 end
 
 function SfxManager:crank_sfx_play()
-    crank_sfx:setVolume(1)
+    crank_sfx:setVolume(0.5)
 end
 
 function SfxManager:crank_sfx_stop()

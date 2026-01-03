@@ -32,14 +32,24 @@ local function draw_label(text, offset_x, offset_y)
     gfx.setImageDrawMode(gfx.kDrawModeCopy)
 end
 
+local function screen_shake(shake_time, shake_magnitude)
+    local shake_timer = pd.timer.new(shake_time, shake_magnitude, 0)
+    shake_timer.updateCallback = function(timer)
+        pd.display.setOffset(timer.value, 0)
+    end
+    shake_timer.timerEndedCallback = function()
+        pd.display.setOffset(0, 0)
+    end
+end
+
 local function reset_state()
+    Canvas:init()
     Guardian:init()
 
     SfxManager:menu_stop()
     SfxManager:game_over_stop()
     SfxManager:loop_start()
 
-    SfxManager:crank_sfx_start()
     SfxManager:crank_sfx_stop()
 end
 
@@ -47,6 +57,8 @@ function Game:init()
     pd.resetElapsedTime()
 
     Events.on_crank_tick:disconnect_all()
+    Events.on_crank_mistake_back:disconnect_all()
+    Events.on_crank_mistake_next:disconnect_all()
     Events.on_canvas_back:disconnect_all()
     Events.on_canvas_next:disconnect_all()
     Events.on_watching:disconnect_all()
@@ -106,6 +118,7 @@ function Game:init()
             Tutorial.moved_backward_wrong_way = false
             Tutorial.move_backward_count -= 1
             if Tutorial.move_backward_count <= 0 then
+                Canvas:init()
                 Tutorial.state += 1
             end
             return
@@ -119,12 +132,24 @@ function Game:init()
         end
     end)
 
+    Events.on_crank_mistake_back:connect(function()
+        screen_shake(150, -10)
+    end)
+
+    Events.on_crank_mistake_next:connect(function()
+        screen_shake(150, 10)
+    end)
+
     if Tutorial.state ~= 1 then
         reset_state()
     end
 
+    SfxManager:crank_sfx_start()
+
     -- Last minute hack
     self.anim_counter = 1
+
+    gfx.setBackgroundColor(gfx.kColorBlack)
 end
 
 function Game:update()

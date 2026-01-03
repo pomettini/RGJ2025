@@ -1,6 +1,7 @@
 import "CoreLibs/graphics"
 import "CoreLibs/animation"
 import "events"
+import "tutorial"
 import "utils"
 
 local pd <const> = playdate
@@ -52,7 +53,10 @@ function Canvas:init()
         self.completeness += 1
 
         if self.completeness >= COMPLETENESS_MAX then
-            Events.on_game_over:emit()
+            -- Game over should not trigger if in tutorial
+            if Tutorial.state >= TUTORIAL_END then
+                Events.on_game_over:emit()
+            end
         end
     end)
 end

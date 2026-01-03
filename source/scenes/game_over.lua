@@ -14,7 +14,6 @@ GameOver.timer = 0
 function GameOver:init()
     self.timer = 0
 
-    SfxManager:crank_sfx_stop()
 
     SfxManager:loop_stop()
     SfxManager:game_over_start()
@@ -25,6 +24,8 @@ function GameOver:update()
     spr_game_over:draw(0, 0)
 
     self.timer += 0.01
+
+    SfxManager:crank_sfx_stop()
 
     if pd.buttonJustReleased(pd.kButtonA) and self.timer > 0.66 then
         SceneManager:change_scene(Game)

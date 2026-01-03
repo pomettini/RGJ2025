@@ -3,6 +3,7 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "events"
 import "guardian"
+import "tutorial"
 import "utils"
 
 local pd <const> = playdate
@@ -60,6 +61,7 @@ ButtonQueue.current_button = 1
 ButtonQueue.current_tick = 0
 ButtonQueue.offset_x = 0
 ButtonQueue.show_indicator = true
+ButtonQueue.correct_pressed = false
 ButtonQueue.queue = {}
 
 function ButtonQueue:update_queue()
@@ -103,6 +105,7 @@ function ButtonQueue:update(dt)
     Guardian.crank_moving = false
 
     if current == self.current_button then
+        self.correct_pressed = true
         self.offset_x -= change
 
         if change > 0 then
@@ -112,6 +115,8 @@ function ButtonQueue:update(dt)
         if change < 0 then
             Guardian.crank_moving = true
         end
+    else
+        self.correct_pressed = false
     end
 
     if self.current_tick > 16 then
@@ -120,10 +125,28 @@ function ButtonQueue:update(dt)
     end
 
     if self.offset_x > KEY_DISTANCE then
+        -- Move backward
+        if
+            Tutorial.state == TUTORIAL_MOVE_FORWARD or
+            Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS or
+            Tutorial.state == TUTORIAL_MOVE_FORWARD_WITH_CANVAS_SECOND
+        then
+            -- Wrong turn
+            Events.on_crank_mistake_next:emit()
+        end
+
         Events.on_canvas_back:emit()
         self:move_back()
         self.offset_x = 0
     elseif self.offset_x < -KEY_DISTANCE then
+        -- Move forward
+        if
+            Tutorial.state == TUTORIAL_MOVE_BACKWARD or
+            Tutorial.state == TUTORIAL_MOVE_BACKWARD_WITH_CANVAS
+        then
+            Events.on_crank_mistake_back:emit()
+        end
+
         Events.on_canvas_next:emit()
         self:move_next()
         self.offset_x = 0
@@ -140,12 +163,12 @@ function ButtonQueue:draw()
         local start_x = 200 - ((KEY_DISTANCE * QUEUE_LENGTH) / 2)
         local x = start_x + ((i - 1) * KEY_DISTANCE) + self.offset_x + 16
 
-        local alpha = 0.25
         if i == CURRENT_BUTTON_ID then
-            alpha = 1
+            local scale = self.correct_pressed and 0.5 or 1
+            SPRITE_BUTTONS[self.queue[i]]:drawRotated(x + 16, 208 + 16, 0, scale)
+        else
+            SPRITE_BUTTONS[self.queue[i]]:drawFaded(x, 208, 0.25, gfx.image.kDitherTypeBayer2x2)
         end
-
-        SPRITE_BUTTONS[self.queue[i]]:drawFaded(x, 208, alpha, gfx.image.kDitherTypeBayer2x2)
     end
 
     gfx.setColor(gfx.kColorWhite)
